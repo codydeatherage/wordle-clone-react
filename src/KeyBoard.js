@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 import styled from 'styled-components'
 import { AppContext } from './App'
 
@@ -20,7 +20,7 @@ const Row = styled.div`
 const Key = styled.div`
   height: 100%;
   flex: 1;
-  background-color: #818384;
+  background-color: ${props => props.bg ? props.bg : '#818384'};
   border-radius: 5%;
   line-height: 58px;
   font-weight: 700;
@@ -38,8 +38,9 @@ const keys = [
   ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK']
 ];
 
-export const KeyBoard = () => {
+export const KeyBoard = ({ colors }) => {
   const appContext = useContext(AppContext);
+
   const handleSpecial = (value) => {
     if (value === 'ENTER') {
       if (appContext.currentGuess.length === 5) {
@@ -48,9 +49,9 @@ export const KeyBoard = () => {
         appContext.dispatch({ type: 'ADD_NEW_GUESS', value: appContext.currentGuess });
       }
     }
-    else if(value === 'BACK'){
-      if(appContext.currentGuess.length > 0){
-        appContext.dispatch({type: 'DELETE_FROM_CURRENT_GUESS'});
+    else if (value === 'BACK') {
+      if (appContext.currentGuess.length > 0) {
+        appContext.dispatch({ type: 'DELETE_FROM_CURRENT_GUESS' });
       }
     }
   }
@@ -61,6 +62,7 @@ export const KeyBoard = () => {
         {keys[0].map((val) =>
           <Key
             key={val}
+            bg={(colors && colors.find((el) => el.val === val)) ? colors.find((el) => el.val === val).color : '#818384'}
             onClick={() => appContext.currentGuess.length < 5 && appContext.dispatch({ type: 'ADD_TO_CURRENT_GUESS', value: val })}
           >{val}</Key>)}
       </Row>
@@ -68,6 +70,7 @@ export const KeyBoard = () => {
         {keys[1].map((val) =>
           <Key
             key={val}
+            bg={(colors && colors.find((el) => el.val === val)) ? colors.find((el) => el.val === val).color : '#818384'}
             onClick={() => appContext.currentGuess.length < 5 && appContext.dispatch({ type: 'ADD_TO_CURRENT_GUESS', value: val })}
           >{val}</Key>
         )}
@@ -76,11 +79,13 @@ export const KeyBoard = () => {
         {keys[2].map((val) =>
           val.length <= 1 ?
             <Key
+              bg={(colors && colors.find((el) => el.val === val)) ? colors.find((el) => el.val === val).color : '#818384'}
               key={val}
               onClick={() => appContext.currentGuess.length < 5 && appContext.dispatch({ type: 'ADD_TO_CURRENT_GUESS', value: val })}
             >{val}</Key>
             :
             <SpecialKey
+              bg={(colors && colors.find((el) => el.val === val)) ? colors.find((el) => el.val === val).color : '#818384'}
               key={val}
               onClick={() => handleSpecial(val)}
             >{val}</SpecialKey>

@@ -32,15 +32,14 @@ export const BoardRow = ({ rowIndex }) => {
                 filledWord.map((letter, index) =>
                     letter.length > 0 ?
                         <FlippingTile
-                            isFlipped={appContext.flipping[rowIndex]}
+                            isFlipped={appContext.flipped[rowIndex]}
                             value={letter}
                             flippedBg={appContext.answer.includes(letter) ?
                                 appContext.answer[index] === letter ? '#538D4E' : '#B59F3B' : '#3A3A3C'}
                             index={index}
-                        >
-                        </FlippingTile>
+                        />
                         :
-                        <Tile></Tile>
+                        <Tile/>
                 )
                 :
                 <>
