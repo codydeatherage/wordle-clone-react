@@ -18,7 +18,7 @@ const Container = styled.div`
     transition: transform 1.0s;
     transform-style: preserve-3d;
     transition-delay: ${props => props.delay};
-    transform: ${props => props.flipped ? 'rotateX(-180deg)': 'rotateX(0)'};
+    transform: ${props => props.flipped ? 'rotateX(-180deg)' : 'rotateX(0)'};
     div {
         position: absolute;
         backface-visibility: hidden; 
@@ -37,7 +37,7 @@ export const Tile = styled.div`
 `
 
 export const FlippingTile = ({ value, flippedBg, isFlipped, index }) => {
-    const delay = `${index + 2*index}00ms`;
+    const delay = `${index + 2 * index}00ms`;
     return (
         <Card>
             <Container flipped={isFlipped} bg={isFlipped ? flippedBg : 'none'} delay={delay}>

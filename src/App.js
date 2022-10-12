@@ -1,4 +1,4 @@
-import React, { useMemo, createContext, useReducer } from 'react'
+import React, { useMemo, createContext, useReducer, useEffect } from 'react'
 import styled from 'styled-components'
 import { NavBar } from './NavBar';
 import { KeyBoard } from './KeyBoard'
@@ -18,7 +18,7 @@ const GameArea = styled.div`
     overflow: hidden;
     width: 450px;
     height: 100%;
-    padding-top: 8rem;
+    padding-top: 3rem;
     margin: auto;
     text-align: center;
     align-items: center;
@@ -66,17 +66,17 @@ function App() {
       const newGuess = guess.map((letter, index) =>
         gameInfo.answer.includes(letter) ?
           gameInfo.answer[index] === letter ?
-            { val: letter, color: '#538D4E' }
+            { val: letter, color: '#538D4E' }//GREEN: #538D4E
             :
-            { val: letter, color: '#B59F3B' }
+            { val: letter, color: '#B59F3B' }//YELLOW : #B59F3B
           :
-          { val: letter, color: '#3A3A3C' }
+          { val: letter, color: '#3A3A3C' }//GRAY: #3A3A3C
       )
       for (let ng of newGuess) {
-        const foundDuplicate = colors.find(el => el.val === ng.val);
+        const valMatch = colors.find(el => el.val === ng.val);
         const colorMatch = colors.find(el => el.color === ng.color);
-        if (foundDuplicate && colorMatch) {
-          foundDuplicate.color = ng.color;
+        if (valMatch && colorMatch) {
+          valMatch.color = ng.color;
         }
         else {
           colors.push(ng);
@@ -94,7 +94,7 @@ function App() {
           <Board>
             <p style={{ color: 'white' }}>Current Guess: {gameInfo.currentGuess}</p>
             {gameInfo.flipped.map((_, index) =>
-              <BoardRow rowIndex={index} />
+              <BoardRow rowIndex={index} key={index} />
             )}
           </Board>
           <KeyBoard colors={keyColors} />
