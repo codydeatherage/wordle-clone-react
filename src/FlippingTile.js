@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 
 const Card = styled.div`
     height: 58px;
@@ -24,12 +24,26 @@ const Container = styled.div`
         backface-visibility: hidden; 
     }
 `
+
+const scale = keyframes`
+    from{ 
+        transform: scale(1.3);
+    }
+    to{
+        transform: scale(1.0);
+    }
+`
+/*https://styled-components.com/docs/basics*/
+const animation = () => css`
+    ${scale} 0.4s ease;
+`
 export const Tile = styled.div`
     height: 58px;
     outline: 2px solid #3A3A3C;
     width: 100%;
     color: white;
     font-size: 36px;
+    animation: ${props => props.filled && animation};
     transition:  background-color 1.2s;
     outline-color: ${props => props.bg ? props.bg : '#3A3A3C'};
     font-weight: bold;
@@ -41,7 +55,7 @@ export const FlippingTile = ({ value, flippedBg, isFlipped, index }) => {
     return (
         <Card>
             <Container flipped={isFlipped} bg={isFlipped ? flippedBg : 'none'} delay={delay}>
-                <Tile >{value}</Tile>
+                <Tile filled={value !== '' ? true : false}>{value}</Tile>
                 <Tile bg={isFlipped ? flippedBg : 'none'}>{value}</Tile>
             </Container>
         </Card>
