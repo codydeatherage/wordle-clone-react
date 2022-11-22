@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { AppContext } from './App'
+import { GameContext } from './GameState'
 import { FlippingTile, Tile } from './FlippingTile'
 /*
 YELLOW : #B59F3B
@@ -15,7 +15,7 @@ const Row = styled.div`
 `
 
 export const BoardRow = ({ rowIndex }) => {
-    const appContext = useContext(AppContext);
+    const appContext = useContext(GameContext);
     const filledWord = [];
     const word = rowIndex === appContext.attempts ? appContext.currentGuess : appContext.guesses[rowIndex];
     for (let i = 0; i < 5; i++) {
@@ -28,29 +28,19 @@ export const BoardRow = ({ rowIndex }) => {
     }
     return (
         <Row>
-            {word ?
-                filledWord.map((letter, index) =>
-                    letter.length > 0 ?
-                        <FlippingTile
-                            key={letter}
-                            isFlipped={appContext.flipped[rowIndex]}
-                            value={letter}
-                            flippedBg={appContext.answer.includes(letter) ?
-                                appContext.answer[index] === letter ? '#538D4E' : '#B59F3B' : '#3A3A3C'}
-                            index={index}
-                        />
-                        :
-                        <Tile/>
-                )
-                :
-                <>
-                    <Tile />
-                    <Tile />
-                    <Tile />
-                    <Tile />
-                    <Tile />
-                </>
-            }
+            {filledWord.map((letter, index) =>
+                letter.length > 0 ?
+                    <FlippingTile
+                        key={index}
+                        isFlipped={appContext.flipped[rowIndex]}
+                        value={letter}
+                        flippedBg={appContext.answer.includes(letter) ?
+                            appContext.answer[index] === letter ? '#538D4E' : '#B59F3B' : '#3A3A3C'}
+                        index={index}
+                    />
+                    :
+                    <Tile key={index} />
+            )}
         </Row>
     )
 }

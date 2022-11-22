@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import Dialog from '@mui/material/Dialog';
 import { List } from 'react-bootstrap-icons'
 import { QuestionCircle } from 'react-bootstrap-icons'
 import { BarChartLine } from 'react-bootstrap-icons'
 import { GearFill } from 'react-bootstrap-icons'
+import Slide from '@mui/material/Slide';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Nav = styled.div`
     position: fixed;
@@ -48,20 +54,66 @@ const NavItems = styled.div`
 `
 
 export const NavBar = () => {
+    const [helpOpen, setHelpOpen] = useState(false);
+    const [statsOpen, setStatsOpen] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+
+    const handleClickOpen = (type) => {
+        switch(type){
+            case 'help': setHelpOpen(true); break;
+            case 'stats': setStatsOpen(true); break;
+            case 'settings': setSettingsOpen(true); break;
+            default : break;
+        }
+    };
+
+    const handleClose = (type) => {
+        switch(type){
+            case 'help': setHelpOpen(false); break;
+            case 'stats': setStatsOpen(false); break;
+            case 'settings': setSettingsOpen(false); break;
+            default : break;
+        }
+    };
+
     return (
         <Nav>
-            {/* <HalfBox /> */}
             <div>
                 <List fontSize={28} />
             </div>
             <h1>Wordle</h1>
             <NavItems>
-                <QuestionCircle fontSize={30} />
-                <BarChartLine fontSize={30} />
-                <GearFill fontSize={30} />
+                <QuestionCircle onClick={() => handleClickOpen('help')} fontSize={30} />
+                <BarChartLine onClick={() => handleClickOpen('stats')} fontSize={30} />
+                <GearFill onClick={() => handleClickOpen('settings')} fontSize={30} />
             </NavItems>
-            
-
+            <Dialog
+                open={helpOpen}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={() => handleClose('help')}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <div>HELP</div>
+            </Dialog>
+            <Dialog
+                open={statsOpen}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={() => handleClose('stats')}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <div>Stats</div>
+            </Dialog>
+            <Dialog
+                open={settingsOpen}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={() => handleClose('settings')}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <div>Settings</div>
+            </Dialog>
         </Nav>
     )
 }
