@@ -1,11 +1,12 @@
-import React, { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 import styled from 'styled-components'
-import { AppContext } from './App'
-import allowed from './allowed.txt'
+import { GameContext } from './GameState'
+import { addLetter, deleteGuess, submitGuess } from './GameArea'
 
 const Container = styled.div`
-  width: 100%;
   height: 200px;
+  width: 450px;
+  margin: auto;
   margin-top: 5em;
   color: white;
 `
@@ -33,61 +34,26 @@ const SpecialKey = styled(LetterKey)`
   min-width: 72px;
 `
 
-let allowedGuesses = '';
-fetch(allowed)
-  .then((res) => res.text())
-  .then(text => { allowedGuesses = text.split(/\r?\n/) });
-
-function binarySearch(arr, key) {
-  let start = 0;
-  let end = arr.length - 1;
-
-  while (start <= end) {
-    let mid = Math.floor((start + end) / 2);
-    if (arr[mid] === key) {
-      return mid;
-    } else if (arr[mid] < key) {
-      start = mid + 1;
-    } else {
-      end = mid - 1;
-    }
-  }
-  return -1;
-}
-
 const Key = ({ val, colors }) => {
   const foundVal = colors.find((el) => el.val === val);
-  const appContext = useContext(AppContext);
-
-  const handleSpecial = (value) => {
-    if (value === 'ENTER') {
-      if (appContext.currentGuess.length === 5) {
-        const guess = appContext.currentGuess.join('').toString().toLowerCase();
-        const guessCheck = binarySearch(allowedGuesses, guess);
-        if (guessCheck > 0) {
-          appContext.dispatch({ type: 'TOGGLE_FLIPPING', value: 1 });
-          appContext.dispatch({ type: 'ADD_NEW_GUESS', value: appContext.currentGuess });
-        }
-      }
-    }
-    else if (value === 'BACK') {
-      if (appContext.currentGuess.length > 0) {
-        appContext.dispatch({ type: 'DELETE_FROM_CURRENT_GUESS' });
-      }
-    }
-  }
+  const { currentGuess, dispatch } = useContext(GameContext);
 
   return val === 'ENTER' || val === 'BACK' ?
     <SpecialKey
       bg='#818384'
       key={val}
-      onClick={() => handleSpecial(val)}
+      onClick={
+        () => val === 'ENTER' ?
+          submitGuess(currentGuess, dispatch)
+          :
+          deleteGuess(currentGuess, dispatch)
+      }
     >{val}</SpecialKey>
     :
     <LetterKey
       key={val}
       bg={(colors && foundVal) ? foundVal.color : '#818384'}
-      onClick={() => appContext.currentGuess.length < 5 && appContext.dispatch({ type: 'ADD_TO_CURRENT_GUESS', value: val })}
+      onClick={() => addLetter(val, currentGuess, dispatch)}
     >{val}</LetterKey>
 }
 
@@ -97,7 +63,36 @@ const keys = [
   ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK']
 ];
 
-export const KeyBoard = ({ colors }) => {
+export const KeyBoard = () => {
+  const { guesses, answer } = useContext(GameContext);
+
+  const keyColors = useMemo(() => {
+    console.log('setting key colors');
+    const colors = [];
+    for (let guess of guesses) {
+      const newGuess = guess.map((letter, index) =>
+        answer.includes(letter) ?
+          answer[index] === letter ?
+            { val: letter, color: '#538D4E' }//GREEN: #538D4E
+            :
+            { val: letter, color: '#B59F3B' }//YELLOW : #B59F3B
+          :
+          { val: letter, color: '#3A3A3C' }//GRAY: #3A3A3C
+      )
+      for (let ng of newGuess) {
+        const valMatch = colors.find(el => el.val === ng.val);
+        const colorMatch = colors.find(el => el.color === ng.color);
+        if (valMatch && colorMatch) {
+          valMatch.color = ng.color;
+        }
+        else {
+          colors.push(ng);
+        }
+      }
+    }
+    return colors;
+  }, [guesses, answer])
+
   return (
     <Container>
       {keys.map((keyRow, index) =>
@@ -106,7 +101,7 @@ export const KeyBoard = ({ colors }) => {
           {keyRow.map((val) =>
             <Key
               key={val}
-              colors={colors}
+              colors={keyColors}
               val={val}
             />
           )}
@@ -115,3 +110,6 @@ export const KeyBoard = ({ colors }) => {
     </Container>
   )
 }
+
+
+
