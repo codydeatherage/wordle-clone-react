@@ -36,7 +36,7 @@ const SpecialKey = styled(LetterKey)`
 
 const Key = ({ val, colors }) => {
   const foundVal = colors.find((el) => el.val === val);
-  const { currentGuess, dispatch } = useContext(GameContext);
+  const { currentGuess, answer, dispatch } = useContext(GameContext);
 
   return val === 'ENTER' || val === 'BACK' ?
     <SpecialKey
@@ -44,7 +44,7 @@ const Key = ({ val, colors }) => {
       key={val}
       onClick={
         () => val === 'ENTER' ?
-          submitGuess(currentGuess, dispatch)
+          submitGuess(currentGuess, answer, dispatch)
           :
           deleteGuess(currentGuess, dispatch)
       }

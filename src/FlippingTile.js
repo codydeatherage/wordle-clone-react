@@ -1,6 +1,5 @@
 import React from 'react'
 import styled, { keyframes, css } from 'styled-components'
-
 const Card = styled.div`
     height: 58px;
     min-width: 58px;
@@ -24,7 +23,6 @@ const Container = styled.div`
         backface-visibility: hidden; 
     }
 `
-
 const scale = keyframes`
     from{ 
         transform: scale(1.3);
@@ -50,12 +48,12 @@ export const Tile = styled.div`
     background-color: ${props => props.bg}
 `
 
-export const FlippingTile = ({ value, flippedBg, isFlipped, index }) => {
+export const FlippingTile = ({ value, flippedBg, isFlipped, index, shake }) => {
     const delay = `${index + 2 * index}00ms`;
     return (
         <Card>
             <Container flipped={isFlipped} bg={isFlipped ? flippedBg : 'none'} delay={delay}>
-                <Tile filled={value !== '' ? true : false}>{value}</Tile>
+                <Tile filled={value !== '' && !shake}>{value}</Tile>
                 <Tile bg={isFlipped ? flippedBg : 'none'}>{value}</Tile>
             </Container>
         </Card>

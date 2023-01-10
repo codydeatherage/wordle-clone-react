@@ -1,10 +1,13 @@
-import React, { useMemo, useContext } from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { NavBar } from './NavBar';
 import { KeyBoard } from './KeyBoard'
 import { BoardRow } from './BoardRow';
 import { GameContext } from './GameState'
+import Snackbar from '@mui/material/Snackbar';
 import GameArea from './GameArea'
+import Slide from '@mui/material/Slide';
+import Grow from '@mui/material/Grow';
 
 const Container = styled.div`
   background-color: #121213;
@@ -26,18 +29,32 @@ const Board = styled.div`
   grid-gap: 5px;
   box-sizing: border-box;
 `
+function GrowTransition(props) {
+  return <Grow {...props} />;
+}
 
 const App = () => {
-  const { currentGuess, flipped } = useContext(GameContext)
+  const { shake, currentGuess, flipped, modalOpen, dispatch, guesses } = useContext(GameContext);
 
   return (
     <Container>
       <NavBar />
+      <Snackbar
+        open={modalOpen}
+        onClose={() => dispatch({ type: 'HIDE_MODAL' })}
+        TransitionComponent={GrowTransition}
+        message="I love snacks"
+        key='Grow'
+      />
       <GameArea>
         <Board>
           <p style={{ color: 'white' }}>Current Guess: {currentGuess}</p>
           {flipped.map((_, index) =>
-            <BoardRow rowIndex={index} key={index} />
+            <BoardRow
+              shake={index === (guesses.length || 0) ? shake : 0}
+              rowIndex={index}
+              key={index + shake}
+            />
           )}
         </Board>
         <KeyBoard />

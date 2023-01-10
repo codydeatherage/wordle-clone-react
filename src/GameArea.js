@@ -69,7 +69,15 @@ const specialKeys = [
     'ALT',
     'NUMLOCK',
     'PAUSE',
-    'SCROLLLOCK'
+    'SCROLLLOCK',
+    'AUDIOVOLUMEUP',
+    'AUDIOVOLUMEDOWN',
+    'AUDIOVOLUMEMUTE',
+    'MEDIASTOP',
+    'LAUNCHMEDIAPLAYER',
+    'LAUNCHAPPLICATION1',
+    'LAUNCHAPPLICATION2'
+
 ]
 
 function isLetter(c) {
@@ -82,23 +90,33 @@ export const deleteGuess = (currentGuess, dispatch) => {
     }
 }
 
-export const submitGuess = (currentGuess, dispatch) => {
+export const submitGuess = (currentGuess, answer, dispatch) => {
     if (currentGuess.length === 5) {
-        /*   if(currentGuess.join('').toString().toUpperCase() === answer ){
-              setOpen(true);
-          } */
+        if (currentGuess.join('').toString().toUpperCase() === answer) {
+            dispatch({ type: 'SHOW_MODAL' });
+        }
         const guess = currentGuess.join('').toString().toLowerCase();
         const guessCheck = binarySearch(allowedGuesses, guess);
         if (guessCheck > 0) {
             dispatch({ type: 'TOGGLE_FLIPPING', value: 1 });
             dispatch({ type: 'ADD_NEW_GUESS', value: currentGuess });
         }
+        else{
+            dispatch({type: 'SHAKE_ROW'})
+            dispatch({type: 'SHOW_MODAL'})
+        }
+    }
+    else{
+        console.log('Guess is too short')
+        dispatch({type: 'SHAKE_ROW'})
+        dispatch({type: 'SHOW_MODAL'})
+
     }
 }
 
 export const addLetter = (input, currentGuess, dispatch) => {
     if (isLetter(input) && currentGuess.length < 5 && specialKeys.indexOf(input.toUpperCase()) === -1) {
-        console.log('A key was pressed', currentGuess.length, input);
+        /*     console.log('A key was pressed', currentGuess.length, input); */
         dispatch({ type: 'ADD_TO_CURRENT_GUESS', value: input.toUpperCase() })
     }
 }
@@ -108,21 +126,17 @@ const GameArea = ({ children }) => {
     const [open, setOpen] = useState(false);
     const { answer, currentGuess, dispatch } = useContext(GameContext);
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-
     const handleKeyDown = (event) => {
-        console.log('contextfunc', event.key);
         switch (event.key.toUpperCase()) {
             case 'BACKSPACE': return deleteGuess(currentGuess, dispatch)
-            case 'ENTER': return submitGuess(currentGuess, dispatch)
+            case 'ENTER': return submitGuess(currentGuess, answer, dispatch)
             default: return addLetter(event.key, currentGuess, dispatch)
         }
     }
 
-
-    useEffect(() => { ref.current.focus() }, [])
+    useEffect(() => {
+        ref.current.focus()
+    }, [])
 
     return (
         <GameContainer
@@ -130,13 +144,6 @@ const GameArea = ({ children }) => {
             onKeyDown={handleKeyDown}
             tabIndex={0}
         >
-            <Snackbar
-                open={open}
-                onClose={handleClose}
-                TransitionComponent={GrowTransition}
-                message="I love snacks"
-                key='Grow'
-            />
             {children}
         </GameContainer>
     )
